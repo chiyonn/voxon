@@ -13,10 +13,10 @@ variable "client_secret" {
   type        = string
 }
 
-variable "verify_ssl" {
-  description = "Whether to verify TLS certs"
+variable "skip_tls_verify" {
+  description = "Whether to skip TLS verification (useful for self-signed certs)"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "vm_list" {
