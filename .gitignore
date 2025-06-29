@@ -1,3 +1,10 @@
+# Terraform artifacts
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+crash.log
+
+# Optional: .tfvars (セキュリティ上)
 terraform.tfvars
-terraform/.terraform/
-terraform/terraform.tfstate*
+*.tfvars
+
