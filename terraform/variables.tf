@@ -33,3 +33,12 @@ variable "ssh_key_path" {
   type        = string
 }
 
+variable "ciuser" {
+  description = "ciuser"
+  type        = string
+}
+
+variable "cipassword" {
+  description = "cipassword"
+  type        = string
+}

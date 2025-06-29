@@ -17,32 +17,26 @@ provider "proxmox" {
 resource "proxmox_vm_qemu" "vm" {
   for_each = { for vm in var.vm_list : vm.name => vm }
 
-  name   = each.value.name
-  target_node = "vm"
-  vmid   = each.value.vmid
-  clone  = "ubuntu24.04-server-template"
+  name         = each.value.name
+  target_node  = "vm"
+  vmid         = each.value.vmid
+  clone        = "ubuntu24.04-server-template"
+  full_clone   = true
 
-  cores  = 2
-  memory = 2048
-  os_type = "cloud-init"
+  cores        = 2
+  memory       = 2048
+  os_type      = "cloud-init"
 
   network {
-    model = "virtio"
+    model  = "virtio"
     bridge = "vmbr0"
   }
 
   ipconfig0 = "ip=${each.value.ip}/24,gw=192.168.40.1"
 
-  disk {
-    slot = "scsi0"
-    size = "32G"
-    type = "disk"
-    storage = "local-lvm"
-  }
-
-  ciuser = "chiyonn"
-  cipassword = ""
-  sshkeys = file(var.ssh_key_path)
+  ciuser    = var.ciuser
+  cipassword = var.cipassword
+  sshkeys   = file(var.ssh_key_path)
 
   agent = 1
 }
