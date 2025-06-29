@@ -2,7 +2,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "Telmate/proxmox"
-      version = ">= 2.9.11"
+      version = "= 3.0.1-rc4"
     }
   }
 }
@@ -11,7 +11,7 @@ provider "proxmox" {
   pm_api_url      = var.proxmox_api_url
   pm_api_token_id = var.client_id
   pm_api_token_secret = var.client_secret
-  pm_tls_insecure = var.verify_ssl
+  pm_tls_insecure = var.skip_tls_verify
 }
 
 resource "proxmox_vm_qemu" "vm" {
@@ -33,8 +33,9 @@ resource "proxmox_vm_qemu" "vm" {
   ipconfig0 = "ip=${each.value.ip}/24,gw=192.168.40.1"
 
   disk {
+    slot = "scsi0"
     size = "32G"
-    type = "scsi"
+    type = "disk"
     storage = "local-lvm"
   }
 
@@ -42,6 +43,5 @@ resource "proxmox_vm_qemu" "vm" {
   cipassword = ""
   sshkeys = file(var.ssh_key_path)
 
-  agent = 1
 }
 
