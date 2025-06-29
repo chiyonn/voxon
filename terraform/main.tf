@@ -19,6 +19,7 @@ resource "proxmox_vm_qemu" "vm" {
 
   name   = each.value.name
   target_node = "vm"
+  vmid   = each.value.vmid
   clone  = "ubuntu24.04-server-template"
 
   cores  = 2
@@ -43,5 +44,6 @@ resource "proxmox_vm_qemu" "vm" {
   cipassword = ""
   sshkeys = file(var.ssh_key_path)
 
+  agent = 1
 }
 
