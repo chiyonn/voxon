@@ -32,6 +32,25 @@ resource "proxmox_vm_qemu" "vm" {
     bridge = "vmbr0"
   }
 
+  disk {
+    slot    = "scsi0"
+    type    = "disk"
+    storage = "local-lvm"
+    size    = "32G"
+  }
+
+  bios = "ovmf"
+  scsihw = "virtio-scsi-pci"
+
+  serial {
+    id   = 0
+    type = "socket"
+  }
+
+  vga {
+    type = "serial0"
+  }
+
   ipconfig0 = "ip=${each.value.ip}/24,gw=192.168.40.1"
 
   ciuser    = var.ciuser
