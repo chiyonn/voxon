@@ -1,48 +1,61 @@
 terraform {
   required_providers {
     proxmox = {
-      source  = "Telmate/proxmox"
-      version = "= 3.0.1-rc4"
+      source  = "bpg/proxmox"
+      version = "~> 0.38.0"
     }
   }
 }
 
 provider "proxmox" {
-  pm_api_url      = var.proxmox_api_url
-  pm_api_token_id = var.client_id
-  pm_api_token_secret = var.client_secret
-  pm_tls_insecure = var.skip_tls_verify
+  endpoint = var.proxmox_api_url
+
+  api_token = {
+    id     = var.client_id
+    secret = var.client_secret
+  }
+
+  insecure = var.skip_tls_verify
 }
 
 resource "proxmox_vm_qemu" "vm" {
   for_each = { for vm in var.vm_list : vm.name => vm }
 
-  name         = each.value.name
-  target_node  = "vm"
-  vmid         = each.value.vmid
-  clone        = "ubuntu24.04-server-template"
-  full_clone   = true
+  name      = each.value.name
+  vm_id     = each.value.vmid
+  node_name = "vm"
+  clone     = "noble-cloudinit-template"
+  full_clone = true
+  on_boot   = true
 
-  cores        = 2
-  memory       = 2048
-  os_type      = "cloud-init"
+  agent {
+    enabled = true
+  }
 
-  network {
+  cpu {
+    cores = 2
+    type  = "host"
+  }
+
+  memory {
+    dedicated = 2048
+  }
+
+  disk {
+    slot        = 0
+    size        = 32
+    storage     = "local-lvm"
+    file_format = "raw"
+    interface   = "scsi0"
+    type        = "disk"
+  }
+
+  network_device {
     model  = "virtio"
     bridge = "vmbr0"
   }
 
-  disk {
-    slot    = "scsi0"
-    type    = "disk"
-    storage = "local-lvm"
-    size    = "32G"
-  }
-
-  bios = "ovmf"
-  scsihw = "virtio-scsi-pci"
-
-  serial {
+  serial_device {
     id   = 0
     type = "socket"
   }
@@ -51,12 +64,33 @@ resource "proxmox_vm_qemu" "vm" {
     type = "serial0"
   }
 
-  ipconfig0 = "ip=${each.value.ip}/24,gw=192.168.40.1"
+  bios = "ovmf"
 
-  ciuser    = var.ciuser
-  cipassword = var.cipassword
-  sshkeys   = file(var.ssh_key_path)
+  operating_system {
+    type = "l26"
+  }
 
-  agent = 1
+  cloud_init {
+    user_data = <<EOF
+#cloud-config
+hostname: ${each.value.name}
+users:
+  - name: chiyonn
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    shell: /bin/bash
+    lock_passwd: false
+    passwd: "${var.chiyonn_encrypted_password}"
+    ssh_authorized_keys:
+      - ${file(var.ssh_key_path)}
+disable_root: false
+ssh_pwauth: true
+EOF
+
+    ip_config {
+      ipv4 = {
+        address = "${each.value.ip}/24"
+        gateway = "192.168.40.1"
+      }
+    }
+  }
 }
-
