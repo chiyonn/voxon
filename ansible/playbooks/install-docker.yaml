@@ -1,0 +1,6 @@
+- name: Install Docker on VMs
+  hosts: docker_hosts
+  become: yes
+  roles:
+    - geerlingguy.docker
+
