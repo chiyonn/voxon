@@ -2,95 +2,80 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "~> 0.38.0"
+      version = "~> 0.78.2"
     }
   }
 }
 
 provider "proxmox" {
-  endpoint = var.proxmox_api_url
-
-  api_token = {
-    id     = var.client_id
-    secret = var.client_secret
-  }
-
-  insecure = var.skip_tls_verify
+  endpoint   = var.pm_api_url
+  api_token  = var.pm_api_token
+  insecure   = true
 }
 
-resource "proxmox_vm_qemu" "vm" {
-  for_each = { for vm in var.vm_list : vm.name => vm }
+resource "proxmox_virtual_environment_vm" "vm" {
+  node_name = var.node_name
+  vm_id     = 110
+  name      = "chiyonn-vm-110"
 
-  name      = each.value.name
-  vm_id     = each.value.vmid
-  node_name = "vm"
-  clone     = "noble-cloudinit-template"
-  full_clone = true
-  on_boot   = true
-
-  agent {
-    enabled = true
+  clone {
+    vm_id = 901
+    full  = true
   }
 
   cpu {
-    cores = 2
-    type  = "host"
+    cores   = 2
+    sockets = 1
+    type    = "host"
   }
 
   memory {
     dedicated = 2048
   }
 
-  disk {
-    slot        = 0
-    size        = 32
-    storage     = "local-lvm"
-    file_format = "raw"
-    interface   = "scsi0"
-    type        = "disk"
-  }
-
-  network_device {
-    model  = "virtio"
-    bridge = "vmbr0"
-  }
-
-  serial_device {
-    id   = 0
-    type = "socket"
-  }
-
-  vga {
-    type = "serial0"
-  }
-
-  bios = "ovmf"
-
+  bios          = "seabios"
+  scsi_hardware = "virtio-scsi-single"
+  boot_order    = ["scsi0", "ide2"]
   operating_system {
     type = "l26"
   }
 
-  cloud_init {
-    user_data = <<EOF
-#cloud-config
-hostname: ${each.value.name}
-users:
-  - name: chiyonn
-    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
-    shell: /bin/bash
-    lock_passwd: false
-    passwd: "${var.chiyonn_encrypted_password}"
-    ssh_authorized_keys:
-      - ${file(var.ssh_key_path)}
-disable_root: false
-ssh_pwauth: true
-EOF
+  agent {
+    enabled = true
+  }
+
+  disk {
+    interface     = "scsi0"
+    size          = 32
+    datastore_id  = var.storage
+    file_format   = "qcow2"
+    cache         = "writeback"
+    iothread      = true
+  }
+
+  cdrom {
+    interface = "ide2"
+    file_id   = "local-lvm:vm-901-cloudinit"
+  }
+
+  network_device {
+    bridge = "vmbr0"
+    model  = "virtio"
+  }
+
+  initialization {
+    interface = "ide2"
 
     ip_config {
-      ipv4 = {
-        address = "${each.value.ip}/24"
+      ipv4 {
+        address = "192.168.40.110/24"
         gateway = "192.168.40.1"
       }
+    }
+
+    user_account {
+      username = "chiyonn"
+      keys     = [file(var.ssh_key_path)]
     }
   }
 }
