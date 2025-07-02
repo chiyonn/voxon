@@ -13,10 +13,20 @@ provider "proxmox" {
   insecure   = true
 }
 
+locals {
+  vm_configs = {
+    "vd-fp-dck-01" = 110
+    "vd-gx-dck-01" = 111
+    "vd-rv-dck-01" = 112
+  }
+}
+
 resource "proxmox_virtual_environment_vm" "vm" {
+  for_each = local.vm_configs
+
   node_name = var.node_name
-  vm_id     = 110
-  name      = "chiyonn-vm-110"
+  vm_id     = each.value
+  name      = each.key
 
   clone {
     vm_id = 901
@@ -36,6 +46,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
   bios          = "seabios"
   scsi_hardware = "virtio-scsi-single"
   boot_order    = ["scsi0", "ide2"]
+
   operating_system {
     type = "l26"
   }
@@ -68,7 +79,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
     ip_config {
       ipv4 {
-        address = "192.168.40.110/24"
+        address = "192.168.40.${each.value}/24"
         gateway = "192.168.40.1"
       }
     }
