@@ -11,6 +11,6 @@ ansible-galaxy install geerlingguy.docker -p ansible/roles
 ### 2. Playbookの実行
 
 ```
-ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/install-docker.yaml
+ansible-playbook -i inventory/hosts.ini playbooks/install-docker.yaml
 ```
 

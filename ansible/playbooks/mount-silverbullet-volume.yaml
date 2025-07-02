@@ -1,0 +1,73 @@
+- name: Setup silverbullet host
+  hosts: silverbullet_hosts
+  become: true
+  tasks:
+
+    - name: Install nfs-common package
+      apt:
+        name: nfs-common
+        state: present
+        update_cache: yes
+
+    - name: Create mount directory
+      file:
+        path: /mnt/silverbullet
+        state: directory
+        mode: '0755'
+
+    - name: Mount NFS share(silverbullet)
+      mount:
+        path: /mnt/silverbullet
+        src: 192.168.40.3:/volume1/silverbullet
+        fstype: nfs
+        opts: defaults
+        state: mounted
+
+    - name: Create /mnt/shared directory
+      file:
+        path: /mnt/shared
+        state: directory
+        mode: '0755'
+
+    - name: Mount NFS share(shared)
+      mount:
+        path: /mnt/shared
+        src: 192.168.40.3:/volume1/shared
+        fstype: nfs
+        opts: defaults
+        state: mounted
+
+    - name: Create ~/.ssh directory for user chiyonn
+      file:
+        path: /home/chiyonn/.ssh
+        state: directory
+        mode: '0700'
+        owner: chiyonn
+        group: chiyonn
+
+    - name: Symlink GitHub key
+      file:
+        src: /mnt/shared/secrets/keys/github
+        dest: /home/chiyonn/.ssh/github
+        state: link
+        owner: chiyonn
+        group: chiyonn
+
+    - name: Git clone silverbullet repository
+      git:
+        repo: git@github.com:chiyonn/silverbullet.git
+        dest: /home/chiyonn/silverbullet
+        key_file: /home/chiyonn/.ssh/github
+        accept_hostkey: yes
+        version: main
+      become: false
+      vars:
+        ansible_ssh_private_key_file: /home/chiyonn/.ssh/github
+
+    - name: Symlink env file
+      file:
+        src: /mnt/shared/secrets/envs/silverbullet.prd.env
+        dest: /home/chiyonn/silverbullet/.env
+        state: link
+        owner: chiyonn
+        group: chiyonn

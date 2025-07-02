@@ -18,7 +18,8 @@ locals {
     "vd-fp-dck-01" = 110
     "vd-gx-dck-01" = 111
     "vd-rv-dck-01" = 112
-    "vp-sb-dck-01" = 113
+
+    "vp-sb-dck-01" = 213
   }
 }
 
