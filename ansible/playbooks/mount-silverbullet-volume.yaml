@@ -1,6 +1,11 @@
 - name: Setup silverbullet host
   hosts: silverbullet_hosts
   become: true
+  vars:
+    user_name: chiyonn
+    nfs_server: 192.168.40.3
+    nfs_silverbullet_path: /volume1/silverbullet
+    nfs_shared_path: /volume1/shared
   tasks:
 
     - name: Install nfs-common package
@@ -18,7 +23,7 @@
     - name: Mount NFS share(silverbullet)
       mount:
         path: /mnt/silverbullet
-        src: 192.168.40.3:/volume1/silverbullet
+        src: "{{ nfs_server }}:{{ nfs_silverbullet_path }}"
         fstype: nfs
         opts: defaults
         state: mounted
@@ -32,42 +37,42 @@
     - name: Mount NFS share(shared)
       mount:
         path: /mnt/shared
-        src: 192.168.40.3:/volume1/shared
+        src: "{{ nfs_server }}:{{ nfs_shared_path }}"
         fstype: nfs
         opts: defaults
         state: mounted
 
     - name: Create ~/.ssh directory for user chiyonn
       file:
-        path: /home/chiyonn/.ssh
+        path: "/home/{{ user_name }}/.ssh"
         state: directory
         mode: '0700'
-        owner: chiyonn
-        group: chiyonn
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
 
     - name: Symlink GitHub key
       file:
         src: /mnt/shared/secrets/keys/github
-        dest: /home/chiyonn/.ssh/github
+        dest: "/home/{{ user_name }}/.ssh/github"
         state: link
-        owner: chiyonn
-        group: chiyonn
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"
 
     - name: Git clone silverbullet repository
       git:
         repo: git@github.com:chiyonn/silverbullet.git
-        dest: /home/chiyonn/silverbullet
-        key_file: /home/chiyonn/.ssh/github
+        dest: "/home/{{ user_name }}/silverbullet"
+        key_file: "/home/{{ user_name }}/.ssh/github"
         accept_hostkey: yes
         version: main
       become: false
       vars:
-        ansible_ssh_private_key_file: /home/chiyonn/.ssh/github
+        ansible_ssh_private_key_file: "/home/{{ user_name }}/.ssh/github"
 
     - name: Symlink env file
       file:
         src: /mnt/shared/secrets/envs/silverbullet.prd.env
-        dest: /home/chiyonn/silverbullet/.env
+        dest: "/home/{{ user_name }}/silverbullet/.env"
         state: link
-        owner: chiyonn
-        group: chiyonn
+        owner: "{{ user_name }}"
+        group: "{{ user_name }}"

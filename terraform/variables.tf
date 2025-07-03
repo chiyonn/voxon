@@ -17,3 +17,17 @@ variable "storage" {
 variable "ssh_key_path" {
   type = string
 }
+
+variable "base_template_id" {
+  type = number
+}
+
+variable "ip_subnet" {
+  type    = string
+  default = "192.168.40"
+}
+
+variable "vm_user" {
+  type    = string
+  default = "chiyonn"
+}
