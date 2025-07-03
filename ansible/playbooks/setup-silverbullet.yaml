@@ -28,35 +28,9 @@
         opts: defaults
         state: mounted
 
-    - name: Create /mnt/shared directory
-      file:
-        path: /mnt/shared
-        state: directory
-        mode: '0755'
+    - import_tasks: common/mount-shared.yaml
 
-    - name: Mount NFS share(shared)
-      mount:
-        path: /mnt/shared
-        src: "{{ nfs_server }}:{{ nfs_shared_path }}"
-        fstype: nfs
-        opts: defaults
-        state: mounted
-
-    - name: Create ~/.ssh directory for user chiyonn
-      file:
-        path: "/home/{{ user_name }}/.ssh"
-        state: directory
-        mode: '0700'
-        owner: "{{ user_name }}"
-        group: "{{ user_name }}"
-
-    - name: Symlink GitHub key
-      file:
-        src: /mnt/shared/secrets/keys/github
-        dest: "/home/{{ user_name }}/.ssh/github"
-        state: link
-        owner: "{{ user_name }}"
-        group: "{{ user_name }}"
+    - import_tasks: common/setup-github.yaml
 
     - name: Git clone silverbullet repository
       git:
