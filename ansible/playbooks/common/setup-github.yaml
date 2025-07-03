@@ -1,0 +1,16 @@
+- name: Create ~/.ssh directory for user
+  file:
+    path: "/home/{{ user_name }}/.ssh"
+    state: directory
+    mode: '0700'
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+
+- name: Symlink GitHub key
+  file:
+    src: /mnt/shared/secrets/keys/github
+    dest: "/home/{{ user_name }}/.ssh/github"
+    state: link
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+

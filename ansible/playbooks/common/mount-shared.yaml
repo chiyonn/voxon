@@ -1,0 +1,15 @@
+- name: Create /mnt/shared directory
+  file:
+    path: /mnt/shared
+    state: directory
+    mode: '0755'
+
+- name: Mount NFS share(shared)
+  mount:
+    path: /mnt/shared
+    src: "{{ nfs_server }}:{{ nfs_shared_path }}"
+    fstype: nfs
+    opts: defaults
+    state: mounted
+    fstab: yes
+
