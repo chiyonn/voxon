@@ -24,10 +24,8 @@ variable "base_template_id" {
 
 variable "ip_subnet" {
   type    = string
-  default = "192.168.40"
 }
 
 variable "vm_user" {
   type    = string
-  default = "chiyonn"
 }
