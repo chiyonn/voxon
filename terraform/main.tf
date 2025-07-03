@@ -31,7 +31,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
   name      = each.key
 
   clone {
-    vm_id = 901
+    vm_id = var.base_template_id
     full  = true
   }
 
@@ -68,7 +68,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
   cdrom {
     interface = "ide2"
-    file_id   = "local-lvm:vm-901-cloudinit"
+    file_id   = "local-lvm:vm-${var.base_template_id}-cloudinit"
   }
 
   network_device {
@@ -81,13 +81,13 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
     ip_config {
       ipv4 {
-        address = "192.168.40.${each.value}/24"
-        gateway = "192.168.40.1"
+        address = "${var.ip_subnet}.${each.value}/24"
+        gateway = "${var.ip_subnet}.1"
       }
     }
 
     user_account {
-      username = "chiyonn"
+      username = var.vm_user
       keys     = [file(var.ssh_key_path)]
     }
   }

@@ -46,3 +46,11 @@
 ---
 
 この手順により、cloud-init 対応の Ubuntu テンプレートが作成できます。
+
+## 変数
+
+`terraform.tfvars` に以下の値を設定してから適用します。
+
+- `base_template_id` – クローン元テンプレートのID
+- `ip_subnet` – VMに割り当てるサブネット(デフォルト `192.168.40`)
+- `vm_user` – VM内で作成するユーザー名
