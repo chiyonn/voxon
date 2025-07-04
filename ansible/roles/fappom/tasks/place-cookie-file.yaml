@@ -1,0 +1,14 @@
+- name: Create secrets directory
+  file:
+    path: /home/{{ user_name }}/fappom/secrets
+    state: directory
+    mode: '0755'
+
+- name: Symlink cookie file
+  file:
+    src: /mnt/shared/secrets/cookies/x.com_cookies.txt
+    dest: "/home/{{ user_name }}/fappom/secrets/x.com_cookies.txt"
+    state: link
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+

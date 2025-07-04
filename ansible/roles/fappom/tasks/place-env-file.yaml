@@ -1,0 +1,8 @@
+- name: Symlink env file
+  file:
+    src: /mnt/shared/secrets/envs/fappom.dev.env
+    dest: "/home/{{ user_name }}/fappom/.env"
+    state: link
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
+

@@ -29,10 +29,5 @@
   vars:
     ansible_ssh_private_key_file: "/home/{{ user_name }}/.ssh/github"
 
-- name: Symlink env file
-  file:
-    src: /mnt/shared/secrets/envs/fappom.dev.env
-    dest: "/home/{{ user_name }}/fappom/.env"
-    state: link
-    owner: "{{ user_name }}"
-    group: "{{ user_name }}"
+- import_tasks: place-env-file.yaml
+- import_tasks: place-cookie-file.yaml
