@@ -14,10 +14,10 @@ ansible-galaxy install geerlingguy.docker -p ansible/roles
 
 ```bash
 # Docker のインストール
-ansible-playbook -i inventory/hosts.ini playbooks/install-docker.yaml
+ansible-playbook playbooks/install-docker.yaml
 
 # fappom ホストのセットアップ
-ansible-playbook -i inventory/hosts.ini playbooks/setup-fappom.yaml
+ansible-playbook playbooks/setup-fappom.yaml
 ```
 
 必要に応じて `inventory/hosts.ini` 内の変数や Playbook の変数を調整してください。
