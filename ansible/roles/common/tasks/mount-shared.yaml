@@ -11,4 +11,3 @@
     fstype: nfs
     opts: defaults
     state: mounted
-    fstab: yes
