@@ -2,14 +2,4 @@
   hosts: docker_hosts
   become: yes
   roles:
-    - geerlingguy.docker
-
-- name: Add user to docker group
-  hosts: docker_hosts
-  become: yes
-  tasks:
-    - name: Add user 'chiyonn' to docker group
-      user:
-        name: chiyonn
-        groups: docker
-        append: yes
+    - docker

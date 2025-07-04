@@ -1,0 +1,38 @@
+- name: Install nfs-common package
+  apt:
+    name: nfs-common
+    state: present
+    update_cache: yes
+
+- name: Create mount directory
+  file:
+    path: /mnt/fappom
+    state: directory
+    mode: '0755'
+
+- name: Mount NFS share(fappom)
+  mount:
+    path: /mnt/fappom
+    src: "{{ nfs_server }}:{{ nfs_fappom_path }}"
+    fstype: nfs
+    opts: defaults
+    state: mounted
+
+- name: Git clone fappom repository
+  git:
+    repo: git@github.com:chiyonn/fappom.git
+    dest: "/home/{{ user_name }}/fappom"
+    key_file: "/home/{{ user_name }}/.ssh/github"
+    accept_hostkey: yes
+    version: main
+  become: false
+  vars:
+    ansible_ssh_private_key_file: "/home/{{ user_name }}/.ssh/github"
+
+- name: Symlink env file
+  file:
+    src: /mnt/shared/secrets/envs/fappom.dev.env
+    dest: "/home/{{ user_name }}/fappom/.env"
+    state: link
+    owner: "{{ user_name }}"
+    group: "{{ user_name }}"
