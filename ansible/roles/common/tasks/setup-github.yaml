@@ -13,4 +13,3 @@
     state: link
     owner: "{{ user_name }}"
     group: "{{ user_name }}"
-

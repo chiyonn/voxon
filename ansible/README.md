@@ -2,25 +2,22 @@
 
 ### 1. 必要なロールのインストール
 
-以下のコマンドでDockerインストール用のAnsibleロールを取得。
+Docker 環境を構築するために [geerlingguy.docker](https://galaxy.ansible.com/geerlingguy/docker) ロールを利用します。
 
-```
+```bash
 ansible-galaxy install geerlingguy.docker -p ansible/roles
 ```
 
-### 2. Playbookの実行
+### 2. Playbook の実行
 
-Docker のインストールと Silverbullet 用の設定を行う 2 つの Playbook が
-含まれています。
+各ホストのセットアップは `playbooks/` 配下の Playbook から実行します。
 
-```
-# Docker インストール
+```bash
+# Docker のインストール
 ansible-playbook -i inventory/hosts.ini playbooks/install-docker.yaml
 
-# Silverbullet ボリュームのマウント
-ansible-playbook -i inventory/hosts.ini playbooks/mount-silverbullet-volume.yaml
+# fappom ホストのセットアップ
+ansible-playbook -i inventory/hosts.ini playbooks/setup-fappom.yaml
 ```
 
-`mount-silverbullet-volume.yaml` では `nfs_server` や `user_name`
-などの変数を必要に応じて変更してください。
-
+必要に応じて `inventory/hosts.ini` 内の変数や Playbook の変数を調整してください。

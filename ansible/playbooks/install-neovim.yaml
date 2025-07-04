@@ -6,16 +6,13 @@
     nfs_server: 192.168.40.3
     nfs_silverbullet_path: /volume1/silverbullet
     nfs_shared_path: /volume1/shared
+  roles:
+    - common
   tasks:
-
     - name: Install neovim
       apt:
         name: neovim
         state: present
-
-    - import_tasks: common/mount-shared.yaml
-
-    - import_tasks: common/setup-github.yaml
 
     - name: Create ~/.config directory for user chiyonn
       file:
