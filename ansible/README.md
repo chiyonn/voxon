@@ -5,7 +5,7 @@
 Docker 環境を構築するために [geerlingguy.docker](https://galaxy.ansible.com/geerlingguy/docker) ロールを利用します。
 
 ```bash
-ansible-galaxy install geerlingguy.docker -p ansible/roles
+ansible-galaxy install geerlingguy.docker
 ```
 
 ### 2. Playbook の実行
