@@ -1,0 +1,35 @@
+- name: Install curl
+  apt:
+    name: curl
+    state: present
+
+- name: Add Node.js APT key
+  apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    state: present
+
+- name: Add Node.js APT repository
+  apt_repository:
+    repo: "deb https://deb.nodesource.com/node_16.x {{ ansible_distribution_release }} main"
+    state: present
+
+- name: Install Node.js (includes npm)
+  apt:
+    name: nodejs
+    state: present
+    update_cache: yes
+
+- name: Add Yarn APT key
+  apt_key:
+    url: https://dl.yarnpkg.com/debian/pubkey.gpg
+    state: present
+
+- name: Add Yarn APT repository
+  apt_repository:
+    repo: "deb https://dl.yarnpkg.com/debian/ stable main"
+    state: present
+
+- name: Install Yarn
+  apt:
+    name: yarn
+    state: present

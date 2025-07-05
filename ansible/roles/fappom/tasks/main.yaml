@@ -31,3 +31,10 @@
 
 - import_tasks: place-env-file.yaml
 - import_tasks: place-cookie-file.yaml
+- import_tasks: setup-yarn.yaml
+
+- name: Run yarn install in frontend directory
+  command: yarn install
+  args:
+    chdir: "/home/{{ user_name }}/fappom/frontend"
+
